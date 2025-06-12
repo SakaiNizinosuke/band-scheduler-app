@@ -1,51 +1,58 @@
-import { useForm, type SubmitHandler } from "react-hook-form";
-import React from "react";
-import {
-    FormErrorMessage,
-    FormLabel,
-    Input,
-    Button,
-    FormControl
-} from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
+import { Button } from "@chakra-ui/react";
+import { NumberField } from "./NumberField";
 
 type FormValues = {
-    name: string;
+    numberOfStudios: number;
+    numberOfPeriods: number;
+    minNumberOfRehearsal: number;
+    maxNumberOfRehearsal: number;
 };
 
 export default function HookForm() {
     const {
         handleSubmit,
-        register,
-        formState: { errors, isSubmitting }
+        control,
+        formState: { errors, isSubmitting },
     } = useForm<FormValues>();
 
-    const onSubmit: SubmitHandler<FormValues> = (values) => {
-        return new Promise<void>((resolve) => {
-            setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
-                resolve();
-            }, 3000);
-        });
-    }
+    const onSubmit = (data: FormValues) => {
+        alert(JSON.stringify(data, null, 2));
+    };
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl isInvalid={!!errors.name}>
-                <FormLabel htmlFor="name">First name</FormLabel>
-                <Input
-                    id="name"
-                    placeholder="name"
-                    {...register("name", {
-                        required: "This is required",
-                        minLength: { value: 4, message: "Minimam length should be 4"}
-                    })}
-                />
-                <FormErrorMessage>
-                    {errors.name && errors.name.message}
-                </FormErrorMessage>
-            </FormControl>
+            <NumberField
+                control={control}
+                name="numberOfStudios"
+                label="スタジオ数"
+                error={errors.numberOfStudios}
+                min={1}
+            />
+            <NumberField
+                control={control}
+                name="numberOfPeriods"
+                label="時限数"
+                error={errors.numberOfPeriods}
+                min={1}
+            />
+            <NumberField
+                control={control}
+                name="minNumberOfRehearsal"
+                label="最小練習回数"
+                error={errors.minNumberOfRehearsal}
+                min={1}
+            />
+            <NumberField
+                control={control}
+                name="maxNumberOfRehearsal"
+                label="最大練習回数"
+                error={errors.maxNumberOfRehearsal}
+                min={1}
+            />
+
             <Button mt={4} colorScheme="teal" isLoading={isSubmitting} type="submit">
-                Submit
+                送信
             </Button>
         </form>
     );
