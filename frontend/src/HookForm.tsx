@@ -41,7 +41,7 @@ export default function HookForm() {
                 name="minNumberOfRehearsal"
                 label="最小練習回数"
                 error={errors.minNumberOfRehearsal}
-                min={1}
+                min={0}
             />
             <NumberField
                 control={control}
