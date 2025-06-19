@@ -1,9 +1,10 @@
 import { Button, VStack } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NumberField } from "./NumberField";
 import { useState } from "react";
+import { FileUploadForm } from "./FileUploadForm";
 
 const schema = z
     .object({
@@ -11,6 +12,11 @@ const schema = z
         numberOfStudios: z.number().min(1, { message: "1以上を入力してください"}),
         minRehearsal: z.number().min(0, { message: "0以上を入力してください"}),
         maxRehearsal: z.number().min(0, { message: "0以上を入力してください"}),
+        file: z
+            .custom<File>((val) => val instanceof File, {
+                message: "ファイルをアップロードしてください",
+            })
+            .nullable(),
     })
     .refine((data) => data.minRehearsal <= data.maxRehearsal, {
         message: "最大練習回数は最小練習回数以上にしてください",
@@ -34,6 +40,7 @@ export default function UnifiedForm() {
             numberOfStudios: 1,
             minRehearsal: 0,
             maxRehearsal: 0,
+            file: null,
         },
     })
 
@@ -41,6 +48,15 @@ export default function UnifiedForm() {
         setIsLoading(true)
         await new Promise((resolve) => setTimeout(resolve, 2000))
         console.log("送信データ", data)
+
+        const formData = new FormData()
+        formData.append("numberOfPeriods", String(data.numberOfPeriods))
+        formData.append("numberOfStudios", String(data.numberOfStudios))
+        formData.append("minRehearsal", String(data.minRehearsal))
+        formData.append("maxRehearsal", String(data.maxRehearsal))
+        if (data.file) {
+            formData.append("file", data.file)
+        }
 
         setIsLoading(false)
     }
@@ -75,6 +91,14 @@ export default function UnifiedForm() {
                 label="最大練習回数を入力してください"
                 error={errors.maxRehearsal}
                 min={0}
+                />
+
+                <Controller
+                    name="file"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                        <FileUploadForm field={field} error={fieldState.error} />
+                    )}
                 />
                 <Button type="submit" colorScheme="teal" size="sm" mt={4} loading={isLoading}>
                     送信
