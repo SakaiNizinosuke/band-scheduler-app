@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { Button } from "@chakra-ui/react";
 import { NumberField } from "./NumberField";
+import { NumberForm } from "./NumberForm";
+import UnifiedForm from "./UnifiedForm";
 
 type FormValues = {
     numberOfStudios: number;
@@ -9,6 +11,7 @@ type FormValues = {
     maxNumberOfRehearsal: number;
 };
 
+/*
 export default function HookForm() {
     const {
         handleSubmit,
@@ -19,6 +22,7 @@ export default function HookForm() {
     const onSubmit = (data: FormValues) => {
         alert(JSON.stringify(data, null, 2));
     };
+
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -51,9 +55,14 @@ export default function HookForm() {
                 min={1}
             />
 
-            <Button mt={4} colorScheme="teal" isLoading={isSubmitting} type="submit">
+            <Button mt={4} colorScheme="teal" loading={isSubmitting} type="submit">
                 送信
             </Button>
         </form>
     );
+*/
+export default function HookForm() {
+    return (
+        <UnifiedForm />
+    )
 }
