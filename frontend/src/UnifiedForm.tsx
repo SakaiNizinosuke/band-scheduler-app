@@ -1,4 +1,4 @@
-import { Button, VStack } from "@chakra-ui/react";
+import { Button, VStack, SimpleGrid, Box, Card } from "@chakra-ui/react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,47 +63,58 @@ export default function UnifiedForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <VStack align="stretch">
-                <NumberField
-                control={control}
-                name="numberOfPeriods"
-                label="時限数を入力してください"
-                error={errors.numberOfPeriods}
-                min={1}
-                />
-                <NumberField
-                control={control}
-                name="numberOfStudios"
-                label="スタジオ数を入力してください"
-                error={errors.numberOfStudios}
-                min={1}
-                />
-                <NumberField
-                control={control}
-                name="minRehearsal"
-                label="最小練習回数を入力してください"
-                error={errors.minRehearsal}
-                min={0}
-                />
-                <NumberField
-                control={control}
-                name="maxRehearsal"
-                label="最大練習回数を入力してください"
-                error={errors.maxRehearsal}
-                min={0}
-                />
+            <Card.Root colorPalette={"teal"} >
+                <Card.Body>
+                    <VStack align="stretch">
+                        <Box display="flex" justifyContent={"flex-end"} mr={8}>
+                            <SimpleGrid columns={2} rowGap={5} columnGap={9}>
+                                <NumberField
+                                control={control}
+                                name="numberOfPeriods"
+                                label="時限数"
+                                error={errors.numberOfPeriods}
+                                min={1}
+                                />
+                                <NumberField
+                                control={control}
+                                name="numberOfStudios"
+                                label="スタジオ数"
+                                error={errors.numberOfStudios}
+                                min={1}
+                                />
+                                <NumberField
+                                control={control}
+                                name="minRehearsal"
+                                label="最小練習回数"
+                                error={errors.minRehearsal}
+                                min={0}
+                                />
+                                <NumberField
+                                control={control}
+                                name="maxRehearsal"
+                                label="最大練習回数"
+                                error={errors.maxRehearsal}
+                                min={0}
+                                />
+                            </SimpleGrid>
+                        </Box>
 
-                <Controller
-                    name="file"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <FileUploadForm field={field} error={fieldState.error} />
-                    )}
-                />
-                <Button type="submit" colorScheme="teal" size="sm" mt={4} loading={isLoading}>
-                    送信
-                </Button>
-            </VStack>
+                        <Box mt={6}>
+                            <Controller
+                                name="file"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <FileUploadForm field={field} error={fieldState.error} />
+                                )}
+                            />
+                        </Box>
+
+                        <Button type="submit" colorScheme="teal" size="sm" mt={4} loading={isLoading}>
+                            送信
+                        </Button>
+                    </VStack>
+                </Card.Body>
+            </Card.Root>
         </form>
     )
 }
