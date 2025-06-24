@@ -1,4 +1,4 @@
-import { Box, Flex, VStack, Link, Text, Icon } from "@chakra-ui/react"
+import { Box, Flex, Text, Icon } from "@chakra-ui/react"
 import { FiTable, FiUsers, FiEdit } from "react-icons/fi"
 import type { IconType } from "react-icons/lib"
 import type { FlexProps } from "@chakra-ui/react"

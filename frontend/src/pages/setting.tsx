@@ -2,9 +2,9 @@ import { Button, VStack, SimpleGrid, Box, Card, Container, Heading } from "@chak
 import { Controller, useForm } from "react-hook-form";
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { NumberField } from "../components/NumberField";
+import { NumberField } from "../components/numberField";
 import { useState } from "react";
-import { FileUploadForm } from "../components/FileUploadForm";
+import { FileUploadForm } from "../components/fileUploadForm";
 
 const schema = z
     .object({

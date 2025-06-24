@@ -1,5 +1,5 @@
 import { ChakraProvider, defaultSystem} from "@chakra-ui/react";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/sidebar";
 import Setting from "./pages/setting";
 import { Routes, Route } from "react-router-dom";
 
