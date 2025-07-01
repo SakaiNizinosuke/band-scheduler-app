@@ -1,7 +1,8 @@
-import { Box, Flex, Text, Icon } from "@chakra-ui/react"
+import { Box, Flex, Text, Icon, Spacer, VStack } from "@chakra-ui/react"
 import { FiTable, FiUsers, FiEdit } from "react-icons/fi"
 import type { IconType } from "react-icons/lib"
 import type { FlexProps } from "@chakra-ui/react"
+import { ColorModeButton } from "./ui/color-mode"
 
 interface LinkItemProps {
     name: string
@@ -64,18 +65,25 @@ export default function Sidebar () {
             left={0}
             h={"100vh"}
         >
-            <Flex h={"20"} alignItems={"center"} mx={"8"} justifyContent={"space-between"}>
-                <Text fontSize={"xl"} fontFamily={"monospace"} fontWeight={"bold"}>
-                    総合音楽研究会
-                </Text>
-            </Flex>
-            {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon}>
-                    <Text fontWeight={"bold"}>
-                        {link.name}
+            <Flex direction={"column"} h={"100%"}>
+                <Flex h={"20"} alignItems={"center"} mx={"8"} justifyContent={"space-between"}>
+                    <Text fontSize={"xl"} fontFamily={"monospace"} fontWeight={"bold"}>
+                        総合音楽研究会
                     </Text>
-                </NavItem>
-            ))}
+                </Flex>
+
+                <VStack align={"stretch"} mt={-4} gap={0}>
+                    {LinkItems.map((link) => (
+                        <NavItem key={link.name} icon={link.icon}>
+                            <Text fontWeight={"bold"}>
+                                {link.name}
+                            </Text>
+                        </NavItem>
+                    ))}
+                </VStack>
+                <Spacer />
+                <ColorModeButton />
+            </Flex>
         </Box>
     )
 }
