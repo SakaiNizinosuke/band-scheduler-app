@@ -1,12 +1,10 @@
 import { createListCollection, Combobox, Wrap, Portal, Badge } from "@chakra-ui/react"
 import { useMemo, useState } from "react"
+
 type MemberSelectorProps = {
-    part: string
     multi: boolean
-    selectedMembers: string[]
-    onChange: (value: string[]) => void
-    searchValue: string
-    setSearchValue: (value: string) => void
+    value?: string[]
+    onChange: (value: any) => void
 }
 
 const members = [
@@ -18,7 +16,9 @@ const members = [
     "小林",
 ]
 
-export const MemberCombobox = ({ part, multi, selectedMembers, onChange, searchValue, setSearchValue }: MemberSelectorProps) => {
+export const MemberCombobox = ({ multi, value, onChange }: MemberSelectorProps) => {
+    const [searchValue, setSearchValue] = useState("")
+
     const filteredItems = useMemo(
         () =>
             members.filter((item) =>
@@ -32,31 +32,36 @@ export const MemberCombobox = ({ part, multi, selectedMembers, onChange, searchV
         [filteredItems],
     )
 
+    const handleValueChange = (details: Combobox.ValueChangeDetails) => {
+        onChange(details.value)
+    }
+
     return (
         <Combobox.Root
             multiple={multi}
             openOnClick
             closeOnSelect
-            width={"320px"}
-            value={selectedMembers}
+            width={"100%"}
+            value={value}
             collection={collection}
-            onValueChange={(details) => onChange(details.value)}
+            onValueChange={handleValueChange}
             onInputValueChange={(details) => setSearchValue(details.inputValue)}
         >
-            <Wrap gap={"2"}>
-                {selectedMembers.map((member) => (
-                    <Badge key={member}>{member}</Badge>
-                ))}
-            </Wrap>
-
-            <Combobox.Label>{part}（複数人選択可能）</Combobox.Label>
 
             <Combobox.Control>
-                <Combobox.Input placeholder="Type to search"/>
+                <Combobox.Input />
                 <Combobox.IndicatorGroup>
                     <Combobox.Trigger />
                 </Combobox.IndicatorGroup>
             </Combobox.Control>
+
+            {value != undefined &&
+                <Wrap gap={"2"}>
+                    {value.map((member) => (
+                        <Badge key={member}>{member}</Badge>
+                    ))}
+                </Wrap>
+            }
 
             <Portal>
                 <Combobox.Positioner>
