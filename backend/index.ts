@@ -3,6 +3,7 @@ import cors from "cors";
 import { uploadCsvHandler } from "./uploadCsv";
 import dotenv from "dotenv";
 import path from "path";
+import { getMembersHandler } from "./getMembersHandler";
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
@@ -16,6 +17,7 @@ app.use(cors({
 app.use(express.text({ type: "text/csv" }));
 
 app.post("/upload", uploadCsvHandler);
+app.get("/members", getMembersHandler);
 
 const PORT = 3001;
 app.listen(PORT, () => {
