@@ -9,6 +9,11 @@ export const uploadCSV = async (csvFile: File) => {
         body: text,
     });
 
+    console.log("fetch res.ok", res.ok)
+    const data = await res.json();
+    console.log("fetch res data:", data)
+    return data;
+    console.log("fetch res.ok", res.ok)
     if (!res.ok) {
         throw new Error("CSVアップロードに失敗しました")
     }
