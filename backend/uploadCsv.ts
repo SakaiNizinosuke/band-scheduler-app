@@ -8,7 +8,7 @@ dotenv.config({ path: path.resolve(__dirname, ".env") });
 const dynamo = new AWS.DynamoDB.DocumentClient({
     region: process.env.AWS_REGION,
 });
-const TABLE_NAME = process.env.DYNAMO_TABLE_NAME!;
+const TABLE_NAME = "members";
 
 export const uploadCsvHandler = async (req: Request, res: Response) => {
     try {
