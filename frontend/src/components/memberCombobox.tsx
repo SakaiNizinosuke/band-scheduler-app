@@ -1,3 +1,4 @@
+import { fetchMembers } from "@/api";
 import {
   createListCollection,
   Combobox,
@@ -22,16 +23,15 @@ export const MemberCombobox = ({
   const [members, setMembers] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchMembers = async () => {
+    const getMembers = async () => {
       try {
-        const res = await fetch("http://localhost:3001/members");
-        const data = await res.json();
-        setMembers(data.members || []);
+        const members = await fetchMembers();
+        setMembers(members);
       } catch (err) {
         console.error("メンバー取得失敗", err);
       }
     };
-    fetchMembers();
+    getMembers();
   }, []);
 
   const filteredItems = useMemo(

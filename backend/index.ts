@@ -4,6 +4,7 @@ import { uploadCsvHandler } from "./uploadCsv";
 import dotenv from "dotenv";
 import path from "path";
 import { getMembersHandler } from "./getMembersHandler";
+import { uploadBandHander } from "./uploadBand";
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
@@ -15,9 +16,12 @@ app.use(cors({
 }));
 
 app.use(express.text({ type: "text/csv" }));
+app.use(express.json())
 
-app.post("/upload", uploadCsvHandler);
+app.post("/upload/csv", uploadCsvHandler);
 app.get("/members", getMembersHandler);
+app.post("/upload/band", uploadBandHander);
+
 
 const PORT = 3001;
 app.listen(PORT, () => {
