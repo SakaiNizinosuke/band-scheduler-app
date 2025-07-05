@@ -52,3 +52,24 @@ export const fetchMembers = async (): Promise<string[]> => {
     const data = await res.json();
     return data.members || [];
 }
+
+export type BandItem = {
+    id: string;
+    name: string;
+    vocal_names: string[];
+    guitar_names: string[];
+    bass_names: string[];
+    drum_names: string[];
+    keyboard_names: string[];
+    other_names: string[];
+}
+
+export const getBands = async (): Promise<BandItem []> => {
+    const res = await fetch("http://localhost:3001/bands");
+
+    if (!res.ok) {
+        throw new Error("バンド一覧の取得に失敗しました")
+    }
+
+    return await res.json();
+}

@@ -1,4 +1,6 @@
+import { getBands } from "@/api";
 import { Box, Container, Heading, Table } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 const columns = [
   { key: "name", label: "バンド" },
@@ -12,34 +14,34 @@ const columns = [
 
 type ColumnKey = (typeof columns)[number]["key"];
 
-type BandItem = {
-  id: number;
+type DisplayItem = {
+  id: string;
 } & Record<ColumnKey, string>;
 
-const items: BandItem[] = [
-  {
-    id: 1,
-    name: "The Beatles",
-    vocal: "John\njohn",
-    guitar: "George",
-    bass: "Paul",
-    drums: "Ringo",
-    keyboard: "",
-    other: "",
-  },
-  {
-    id: 2,
-    name: "Oasis",
-    vocal: "Liam",
-    guitar: "NoeL",
-    bass: "Andy",
-    drums: "Chris",
-    keyboard: "Gem",
-    other: "",
-  },
-];
-
 export default function BandTable() {
+  const [items, setItems] = useState<DisplayItem[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const raw = await getBands();
+        const formatted = raw.map((band) => ({
+          id: band.id,
+          name: band.name,
+          vocal: band.vocal_names.join("\n"),
+          guitar: band.guitar_names.join("\n"),
+          bass: band.bass_names.join("\n"),
+          drums: band.drum_names.join("\n"),
+          keyboard: band.keyboard_names.join("\n"),
+          other: band.other_names.join("\n"),
+        }));
+        setItems(formatted);
+      } catch (err) {
+        console.error("バンド一覧取得失敗", err);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <Container centerContent maxW={"5xl"} py={10}>
       <Heading size={"lg"} mb={6} textAlign={"center"} fontSize={21}>
