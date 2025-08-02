@@ -174,7 +174,11 @@ export default function BandRequest() {
                     <Field.Label>
                       代表者 <Field.RequiredIndicator />
                     </Field.Label>
-                    <MemberCombobox multi={false} onChange={field.onChange} />
+                    <MemberCombobox
+                      multi={false}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
                     <FieldErrorText>{errors.leader?.message}</FieldErrorText>
                   </Field.Root>
                 )}
