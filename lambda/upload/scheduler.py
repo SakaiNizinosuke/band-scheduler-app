@@ -1,5 +1,4 @@
 import pulp
-import pandas as pd
 import random
 from dynamodb_utils import fetch_bands_from_dynamodb
 from models import Band
