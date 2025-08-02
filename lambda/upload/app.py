@@ -5,7 +5,8 @@ def lambda_handler(event, context):
     result = schedule(
         studio_num=event.get("studio_num", 14),
         period_num=event.get("period_num", 20),
-        rehearsal_num=event.get("rehearsal_num", 1),
+        rehearsal_min_num=event.get("rehearsal_min_num", 1),
+        rehearsal_max_num=event.get("rehearsal_max_num", 3)
     )
 
     if result is None:
