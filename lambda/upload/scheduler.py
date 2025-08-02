@@ -1,5 +1,4 @@
 import pulp
-import pandas as pd
 import random
 from dynamodb_utils import fetch_bands_from_dynamodb
 from models import Band
@@ -27,7 +26,7 @@ def get_g(period_num, bands):
     return g
 
 
-def schedule(studio_num, period_num, rehearsal_num):
+def schedule(studio_num, period_num, rehearsal_min_num, rehearsal_max_num):
     bands = fetch_bands_from_dynamodb()
     band_names = [b.name for b in bands]
     periods = list(range(period_num))
@@ -62,8 +61,8 @@ def schedule(studio_num, period_num, rehearsal_num):
             problem += pulp.lpSum(x[b, p, s] for b in band_names) <= e[s][p]
 
     for b in band_names:
-        problem += pulp.lpSum(x[b, p, s] for p in periods for s in studios) >= rehearsal_num
-        problem += pulp.lpSum(x[b, p, s] for p in periods for s in studios) <= rehearsal_num + 2
+        problem += pulp.lpSum(x[b, p, s] for p in periods for s in studios) >= rehearsal_min_num
+        problem += pulp.lpSum(x[b, p, s] for p in periods for s in studios) <= rehearsal_max_num
 
     problem += pulp.lpSum(x[b, p, s] for b in band_names for p in periods for s in studios)
 

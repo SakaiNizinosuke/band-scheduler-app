@@ -113,6 +113,7 @@ export default function Setting() {
                 </SimpleGrid>
               </Box>
 
+              {/*
               <Box mt={6}>
                 <Controller
                   name="file"
@@ -122,6 +123,7 @@ export default function Setting() {
                   )}
                 />
               </Box>
+               */}
 
               <Button
                 type="submit"
