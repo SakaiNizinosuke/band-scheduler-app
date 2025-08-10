@@ -5,12 +5,14 @@ import {
   Wrap,
   Portal,
   Badge,
+  HStack,
+  CloseButton,
 } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 
 type MemberSelectorProps = {
   multi: boolean;
-  value?: string[];
+  value?: string | string[];
   onChange: (value: any) => void;
 };
 
@@ -47,8 +49,24 @@ export const MemberCombobox = ({
     [filteredItems]
   );
 
+  const selection = useMemo(() => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string" && value) return [value];
+    return [];
+  }, [value]);
+
   const handleValueChange = (details: Combobox.ValueChangeDetails) => {
-    onChange(details.value);
+    const newValue = multi ? details.value : details.value[0] ?? "";
+    onChange(newValue);
+  };
+
+  const handleClear = (itemToRemove: string) => {
+    if (multi && Array.isArray(value)) {
+      const newValue = value.filter((item) => item !== itemToRemove);
+      onChange(newValue);
+    } else {
+      onChange("");
+    }
   };
 
   return (
@@ -57,25 +75,36 @@ export const MemberCombobox = ({
       openOnClick
       closeOnSelect
       width={"100%"}
-      value={value}
+      value={selection}
       collection={collection}
       onValueChange={handleValueChange}
       onInputValueChange={(details) => setSearchValue(details.inputValue)}
     >
       <Combobox.Control>
-        <Combobox.Input />
+        <HStack p={"1"} wrap={"wrap"} gap={"1"}>
+          {selection.map((member, index) => (
+            <Badge
+              key={`${member}-${index}`}
+              variant={"solid"}
+              colorScheme={"teal"}
+              display={"flex"}
+              alignItems={"center"}
+              gap={"1"}
+              size={"sm"}
+            >
+              {member}
+              <CloseButton size={"sm"} onClick={() => handleClear(member)} />
+            </Badge>
+          ))}
+          <Combobox.Input
+            placeholder="メンバーを選択..."
+            style={{ flex: 1, minWidth: "120px" }}
+          />
+        </HStack>
         <Combobox.IndicatorGroup>
           <Combobox.Trigger />
         </Combobox.IndicatorGroup>
       </Combobox.Control>
-
-      {value != undefined && (
-        <Wrap gap={"2"}>
-          {value.map((member) => (
-            <Badge key={member}>{member}</Badge>
-          ))}
-        </Wrap>
-      )}
 
       <Portal>
         <Combobox.Positioner>

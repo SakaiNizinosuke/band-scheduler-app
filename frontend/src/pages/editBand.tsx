@@ -8,14 +8,18 @@ import {
   Heading,
   Input,
   FieldErrorText,
+  Center,
+  Spinner,
+  HStack,
 } from "@chakra-ui/react";
 import { Controller, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { MemberCombobox } from "@/components/memberCombobox";
-import { uploadBand } from "@/api";
+import { useNavigate, useParams } from "react-router-dom";
+import { getBandById, updateBand } from "@/api";
 
 const schema = z.object({
   name: z
@@ -51,8 +55,11 @@ const parts_jp: { [key: string]: string } = {
   other: "その他のパート",
 };
 
-export default function BandRequest() {
-  const [isLoading, setIsLoading] = useState(false);
+export default function EditBand() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const {
     control,
@@ -61,6 +68,7 @@ export default function BandRequest() {
     reset,
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       vocal: [],
@@ -74,10 +82,45 @@ export default function BandRequest() {
     },
   });
 
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchAndSetData = async () => {
+      try {
+        const band = await getBandById(id);
+        console.log("band info: ", band);
+        reset({
+          name: band.name ?? "",
+          vocal: band.vocal_names ?? [],
+          guitar: band.guitar_names ?? [],
+          bass: band.bass_names ?? [],
+          drums: band.drum_names ?? [],
+          keyboard: band.keyboard_names ?? [],
+          other: band.other_names ?? [],
+          songs: band.song_name ?? "",
+          leader: band.leader_name ?? "",
+        });
+      } catch (err) {
+        console.error("バンド情報の取得に失敗しました: ", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAndSetData();
+  }, [id, reset]);
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
-      await uploadBand({
+      if (!id) {
+        console.error("IDがありません。更新処理を中断します。");
+        return;
+      }
+      await updateBand(id, {
         name: data.name,
         vocal_names: data.vocal,
         guitar_names: data.guitar,
@@ -90,19 +133,27 @@ export default function BandRequest() {
       });
 
       alert("バンド登録完了");
-      reset();
+      navigate("/bands");
     } catch (err) {
       alert("登録に失敗しました");
       console.error(err);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <Center h={"100vh"}>
+        <Spinner size={"xl"} />
+      </Center>
+    );
+  }
 
   return (
     <Container maxW={"xl"} py={10}>
       <Heading size={"lg"} mb={6} textAlign={"center"} fontSize={21}>
-        バンド申告フォーム
+        バンド編集フォーム
       </Heading>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card.Root colorPalette={"teal"}>
@@ -116,7 +167,7 @@ export default function BandRequest() {
                     <Field.Label>
                       バンド名 <Field.RequiredIndicator />
                     </Field.Label>
-                    <Input {...field} value={field.value ?? ""} />
+                    <Input {...field} autoComplete="organization" />
                     <FieldErrorText>{errors.name?.message}</FieldErrorText>
                   </Field.Root>
                 )}
@@ -151,7 +202,7 @@ export default function BandRequest() {
                 render={({ field }) => (
                   <Field.Root invalid={!!errors.songs}>
                     <Field.Label>曲名</Field.Label>
-                    <Input {...field} value={field.value ?? ""} />
+                    <Input {...field} autoComplete="off" />
                     <FieldErrorText>{errors.songs?.message}</FieldErrorText>
                   </Field.Root>
                 )}
@@ -176,15 +227,27 @@ export default function BandRequest() {
               />
             </VStack>
 
-            <Button
-              type="submit"
-              colorScheme={"teal"}
-              size={"sm"}
-              mt={4}
-              loading={isLoading}
-            >
-              送信
-            </Button>
+            <HStack mt={4} gap={4}>
+              <Button
+                variant={"outline"}
+                colorScheme={"gray"}
+                size={"sm"}
+                onClick={() => navigate("/bands")}
+                flex={1}
+              >
+                キャンセル
+              </Button>
+              <Button
+                flex={1}
+                type="submit"
+                colorScheme={"teal"}
+                size={"sm"}
+                loading={isSubmitting}
+                w={"100%"}
+              >
+                更新
+              </Button>
+            </HStack>
           </Card.Body>
         </Card.Root>
       </form>

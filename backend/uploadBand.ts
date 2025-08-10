@@ -9,7 +9,7 @@ const dynamo = new AWS.DynamoDB.DocumentClient({
 });
 const TABLE_NAME = "bands";
 
-export const uploadBandHander = async (req: Request, res: Response) => {
+export const uploadBandHandler = async (req: Request, res: Response) => {
     try {
         const {
             name,

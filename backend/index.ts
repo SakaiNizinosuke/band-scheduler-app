@@ -4,8 +4,11 @@ import { uploadCsvHandler } from "./uploadCsv";
 import dotenv from "dotenv";
 import path from "path";
 import { getMembersHandler } from "./getMembersHandler";
-import { uploadBandHander } from "./uploadBand";
+import { uploadBandHandler } from "./uploadBand";
 import { getBandsHandler } from "./getBandsHandler";
+import { deleteBandHandler } from "./deleteBand";
+import { getBandByIdHandler } from "./getBandById";
+import { updateBandHandler } from "./updateBand";
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
@@ -21,8 +24,12 @@ app.use(express.json())
 
 app.post("/upload/csv", uploadCsvHandler);
 app.get("/members", getMembersHandler);
-app.post("/upload/band", uploadBandHander);
-app.get("/bands", getBandsHandler)
+app.post("/upload/band", uploadBandHandler);
+app.get("/bands", getBandsHandler);
+app.delete("/delete/band/:id", deleteBandHandler);
+app.get("/getBand/:id", getBandByIdHandler);
+app.put("/update/band/:id", updateBandHandler);
+
 
 const PORT = 3001;
 app.listen(PORT, () => {
