@@ -1,53 +1,19 @@
-import { fetchMembers } from "@/api";
-import {
-  createListCollection,
-  Combobox,
-  Wrap,
-  Portal,
-  Badge,
-  HStack,
-  CloseButton,
-} from "@chakra-ui/react";
-import { useEffect, useMemo, useState } from "react";
+import { Combobox, Portal, Badge, HStack, CloseButton } from "@chakra-ui/react";
+import { useMemo } from "react";
+import { useMembers } from "../hooks/useMembers";
 
-type MemberSelectorProps = {
+type MemberComboboxProps = {
   multi: boolean;
-  value?: string | string[];
-  onChange: (value: any) => void;
+  value: string | string[];
+  onChange: (value: string | string[]) => void;
 };
 
 export const MemberCombobox = ({
   multi,
   value,
   onChange,
-}: MemberSelectorProps) => {
-  const [searchValue, setSearchValue] = useState("");
-  const [members, setMembers] = useState<string[]>([]);
-
-  useEffect(() => {
-    const getMembers = async () => {
-      try {
-        const members = await fetchMembers();
-        setMembers(members);
-      } catch (err) {
-        console.error("メンバー取得失敗", err);
-      }
-    };
-    getMembers();
-  }, []);
-
-  const filteredItems = useMemo(
-    () =>
-      members.filter((item) =>
-        item.toLowerCase().includes(searchValue.toLowerCase())
-      ),
-    [members, searchValue]
-  );
-
-  const collection = useMemo(
-    () => createListCollection({ items: filteredItems }),
-    [filteredItems]
-  );
+}: MemberComboboxProps) => {
+  const { collection, filteredItems, isLoading, setSearchValue } = useMembers();
 
   const selection = useMemo(() => {
     if (Array.isArray(value)) return value;
@@ -79,25 +45,25 @@ export const MemberCombobox = ({
       collection={collection}
       onValueChange={handleValueChange}
       onInputValueChange={(details) => setSearchValue(details.inputValue)}
+      disabled={isLoading}
     >
       <Combobox.Control>
         <HStack p={"1"} wrap={"wrap"} gap={"1"}>
-          {selection.map((member, index) => (
+          {selection.map((member) => (
             <Badge
-              key={`${member}-${index}`}
+              key={member}
               variant={"solid"}
               colorScheme={"teal"}
               display={"flex"}
               alignItems={"center"}
               gap={"1"}
-              size={"sm"}
             >
               {member}
               <CloseButton size={"sm"} onClick={() => handleClear(member)} />
             </Badge>
           ))}
           <Combobox.Input
-            placeholder="メンバーを選択..."
+            placeholder={isLoading ? "読み込み中..." : "メンバーを選択..."}
             style={{ flex: 1, minWidth: "120px" }}
           />
         </HStack>
