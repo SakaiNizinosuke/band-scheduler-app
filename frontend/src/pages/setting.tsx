@@ -13,29 +13,36 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { NumberField } from "../components/numberField";
 import { useState } from "react";
 import { FileUploadForm } from "../components/fileUploadForm";
-import { uploadCSV } from "@/api";
+import { sendFormSettingToLambda, uploadCSV } from "@/api";
+import type { ResultItem } from "../components/scheduleTable";
+import { ScheduleTable } from "../components/scheduleTable";
 
 const schema = z
   .object({
-    numberOfPeriods: z.number().min(1, { message: "1以上を入力してください" }),
-    numberOfStudios: z.number().min(1, { message: "1以上を入力してください" }),
-    minRehearsal: z.number().min(0, { message: "0以上を入力してください" }),
-    maxRehearsal: z.number().min(0, { message: "0以上を入力してください" }),
+    period_num: z.number().min(1, { message: "1以上を入力してください" }),
+    studio_num: z.number().min(1, { message: "1以上を入力してください" }),
+    rehearsal_min_num: z
+      .number()
+      .min(0, { message: "0以上を入力してください" }),
+    rehearsal_max_num: z
+      .number()
+      .min(0, { message: "0以上を入力してください" }),
     file: z
       .custom<File>((val) => val instanceof File, {
         message: "ファイルをアップロードしてください",
       })
       .nullable(),
   })
-  .refine((data) => data.minRehearsal <= data.maxRehearsal, {
+  .refine((data) => data.rehearsal_min_num <= data.rehearsal_max_num, {
     message: "最大練習回数は最小練習回数以上にしてください",
-    path: ["maxRehearsal"],
+    path: ["rehearsal_max_num"],
   });
 
 type FormValues = z.infer<typeof schema>;
 
 export default function Setting() {
   const [isLoading, setIsLoading] = useState(false);
+  const [resultList, setResultList] = useState<ResultItem[]>([]);
 
   const {
     control,
@@ -45,10 +52,10 @@ export default function Setting() {
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      numberOfPeriods: 1,
-      numberOfStudios: 1,
-      minRehearsal: 0,
-      maxRehearsal: 0,
+      period_num: 1,
+      studio_num: 1,
+      rehearsal_min_num: 0,
+      rehearsal_max_num: 0,
       file: null,
     },
   });
@@ -57,73 +64,56 @@ export default function Setting() {
     setIsLoading(true);
 
     try {
-      console.log("送信データ", data);
-
-      if (data.file) {
-        await uploadCSV(data.file);
-        console.log("CSV アップロード成功");
-      }
+      const resultList = await sendFormSettingToLambda(data);
+      setResultList(resultList);
     } catch (err) {
-      console.error("アップロードエラー", err);
-      alert("アップロード中にエラーが発生しました");
+      console.error("エラー: ", err);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Container maxW={"xl"} py={10}>
+    <Container maxW={"6xl"} py={10}>
       <Heading size={"lg"} mb={6} textAlign={"center"} fontSize={21}>
         バンドスケジューラー設定フォーム
       </Heading>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Card.Root colorPalette={"teal"}>
+        <Card.Root colorPalette={"teal"} maxW={"xl"} mx={"auto"}>
           <Card.Body>
             <VStack align="stretch">
               <Box display="flex" justifyContent={"flex-end"} mr={8}>
-                <SimpleGrid columns={2} rowGap={5} columnGap={9}>
+                <SimpleGrid columns={2} rowGap={5} columnGap={20}>
                   <NumberField
                     control={control}
-                    name="numberOfPeriods"
+                    name="period_num"
                     label="時限数"
-                    error={errors.numberOfPeriods}
+                    error={errors.period_num}
                     min={1}
                   />
                   <NumberField
                     control={control}
-                    name="numberOfStudios"
+                    name="studio_num"
                     label="スタジオ数"
-                    error={errors.numberOfStudios}
+                    error={errors.studio_num}
                     min={1}
                   />
                   <NumberField
                     control={control}
-                    name="minRehearsal"
+                    name="rehearsal_min_num"
                     label="最小練習回数"
-                    error={errors.minRehearsal}
+                    error={errors.rehearsal_min_num}
                     min={0}
                   />
                   <NumberField
                     control={control}
-                    name="maxRehearsal"
+                    name="rehearsal_max_num"
                     label="最大練習回数"
-                    error={errors.maxRehearsal}
+                    error={errors.rehearsal_max_num}
                     min={0}
                   />
                 </SimpleGrid>
               </Box>
-
-              {/*
-              <Box mt={6}>
-                <Controller
-                  name="file"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <FileUploadForm field={field} error={fieldState.error} />
-                  )}
-                />
-              </Box>
-               */}
 
               <Button
                 type="submit"
@@ -138,6 +128,11 @@ export default function Setting() {
           </Card.Body>
         </Card.Root>
       </form>
+      {resultList.length > 0 && (
+        <Box py={8} px={8} mt={2} maxW={"full"} w={"100%"} mx={"auto"}>
+          <ScheduleTable results={resultList} />
+        </Box>
+      )}
     </Container>
   );
 }
