@@ -1,4 +1,4 @@
-import { Button, VStack, SimpleGrid, Box, Card } from "@chakra-ui/react";
+import { Button, VStack, SimpleGrid, Card } from "@chakra-ui/react";
 import { NumberField } from "@/components/numberField";
 import type { Control, FieldErrors } from "react-hook-form";
 import type { SchedulerFormValues } from "../schedulerSettings";
