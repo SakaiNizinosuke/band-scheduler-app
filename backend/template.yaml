@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Backend API for the Band Scheduler App
+
+Resources:
+  # =================================================================
+  # 1. Lambda関数が使用する「実行ロール」を独立して定義します
+  # =================================================================
+  BandSchedulerFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      # AWSが提供する標準のログ書き込み権限ポリシーをアタッチします
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      # DynamoDBへのアクセス権限をインラインポリシーとして追加します
+      Policies:
+        - PolicyName: DynamoDBAccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "dynamodb:GetItem"
+                  - "dynamodb:PutItem"
+                  - "dynamodb:UpdateItem"
+                  - "dynamodb:DeleteItem"
+                  - "dynamodb:Scan"
+                  - "dynamodb:Query"
+                Resource:
+                  - Fn::Sub: "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/bands"
+                  - Fn::Sub: "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/members"
+
+  # =================================================================
+  # 2. Lambda関数本体を定義します
+  # =================================================================
+  BandSchedulerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/lambda.handler
+      Runtime: nodejs18.x
+      # 上で定義した実行ロールを指定します
+      Role: !GetAtt BandSchedulerFunctionRole.Arn
+      Environment:
+        Variables:
+          AWS_REGION: !Ref AWS::Region
+      # API Gatewayを暗黙的に作成し、全てのパスとメソッドをこの関数にルーティングします
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
+# --- 出力 ---
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
