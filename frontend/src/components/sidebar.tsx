@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Icon, Spacer, VStack, Link } from "@chakra-ui/react";
+import { Link, Box, Flex, Text, Icon, Spacer, VStack } from "@chakra-ui/react";
 import { FiTable, FiUsers, FiEdit } from "react-icons/fi";
 import type { IconType } from "react-icons/lib";
 import type { FlexProps } from "@chakra-ui/react";
@@ -23,8 +23,7 @@ const LinkItems: Array<LinkItemProps> = [
 
 const NavItem = ({ icon, children, href }: NavItemProps) => {
   return (
-    <Box
-      as={"a"}
+    <Link
       href={href}
       style={{ textDecoration: "none" }}
       _focus={{ boxShadow: "none", outline: "none" }}
@@ -54,7 +53,7 @@ const NavItem = ({ icon, children, href }: NavItemProps) => {
         )}
         {children}
       </Flex>
-    </Box>
+    </Link>
   );
 };
 

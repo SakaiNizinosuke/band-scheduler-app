@@ -1,4 +1,4 @@
-import { VStack, Field, Box, Input, FieldErrorText } from "@chakra-ui/react";
+import { VStack, Field, Input, FieldErrorText } from "@chakra-ui/react";
 import { Controller } from "react-hook-form";
 import { MemberCombobox } from "./memberCombobox";
 import { parts, parts_jp } from "../bandFormSettings";
