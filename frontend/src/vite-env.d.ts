@@ -1,6 +1,6 @@
 interface ImportMetaEnv {
   readonly VITE_API_URL: string;
-  readonly LAMBDA_URL: string;
+  readonly VITE_LAMBDA_URL: string;
 }
 
 interface ImportMeta {

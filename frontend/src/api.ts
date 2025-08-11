@@ -63,7 +63,7 @@ export const getMembers = async (): Promise<string[]> => {
 };
 
 export const sendSchedulerSettings = async (settings: SchedulerSettings) => {
-  const LAMBDA_URL = import.meta.env.LAMBDA_URL || "";
+  const LAMBDA_URL = import.meta.env.VITE_LAMBDA_URL || "";
   const response = await fetch(LAMBDA_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
