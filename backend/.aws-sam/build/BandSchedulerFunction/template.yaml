@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Backend API for the Band Scheduler App
+
+Globals:
+  Function:
+    Timeout: 10
+
+Resources:
+  BandSchedulerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/lambda.Handler
+      Runtime: nodejs18.x
+      Policies:
+        - DynamoDBCrudPolicy:
+          TableName: "bands"
+        - DynamoDBCrudPolicy:
+          TableName: "members"
+      Environment:
+        Variables:
+          AWS_REGION: !Ref AWS::AWS_REGION
+
+  ApiGateway:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "http://localhost:5173"
+        AllowHeaders:
+          - "Content-Type"
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        AllowCredentials: true
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"

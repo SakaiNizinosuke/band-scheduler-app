@@ -6,7 +6,6 @@ import { apiRouter } from "./api";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 app.use(
   cors({
@@ -18,6 +17,4 @@ app.use(express.json());
 
 app.use("/api", apiRouter);
 
-app.listen(PORT, () => {
-  console.log(`API server listening on http://localhost:${PORT}`);
-});
+export { app };
